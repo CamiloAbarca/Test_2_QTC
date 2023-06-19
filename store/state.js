@@ -1,5 +1,6 @@
 const initialState = {
-  hi: 'Hola!'
+  hi: 'Hola!',
+  quoteList: []
 }
 
 export default () => {

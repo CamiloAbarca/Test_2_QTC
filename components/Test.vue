@@ -1,23 +1,40 @@
 <template>
   <div>
-    <!-- Ejemplo simple de componentes y reactividad -->
-    <p>Author: {{ author }}</p>
-    <p>Quote: {{ msg }}</p>
+    <!-- Botón Generar Frase -->
+    <br>
     <v-btn 
-      outlined 
-      color="blue" 
-      :loading="loadingMsg"
       @click="onGetNewMsg"
     >
-      Nueva Frase
+      Generar Frase Random
     </v-btn>
+    <br>
+    <br>
+    
+    <!-- Form agregar frase -->
+    <form>
+    <v-text-field 
+      v-model="quoteR"      
+      label="Quote"
+    ></v-text-field>
+    <v-text-field
+      v-model="authorR"
+      label="Author"
+    ></v-text-field>
+    <v-btn
+      class="mr-4"
+      @click="createQuote(quoteR, authorR)"
+    >
+      Agregar
+    </v-btn>
+  </form>
+
+  <br>
+  <br>
 
     <v-divider></v-divider>
-
-    <v-simple-table
-    fixed-header
-    height="300px"
-  >
+<!-- Tabla de quotes -->
+  <v-simple-table>
+    <template v-slot:default>
       <thead>
         <tr>
           <th class="text-left">
@@ -26,17 +43,37 @@
           <th class="text-left">
             Author
           </th>
+          <th class="text-left">
+            Action
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="quote in quotes"
-          :key="quote.quote"
+        v-for="quote, index in quoteList"
+          :key="quote.index"
         >
           <td>{{ quote.quote }}</td>
           <td>{{ quote.author }}</td>
+          <td>
+            <v-btn
+            x-small
+            @click="deleteQuotes(index)"
+              
+            >
+            Eliminar
+            </v-btn>
+            <v-btn
+            x-small
+            @click="updateQuote()"
+              
+            >
+            Editar
+            </v-btn>
+          </td>
         </tr>
       </tbody>
+    </template>
   </v-simple-table>
 
     <!--
@@ -56,19 +93,20 @@
 </template>
 
 <script>
-//import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import {
-  GET_NEW_MSG
-} from '~/store/actions.types'
+import { GET_NEW_MSG } from '~/store/actions.types'
+
+import { SET_QUOTELIST } from '~/store/mutations.types'
+
 
 export default {
   data () {
     return {
-      author: '...',
-      msg: '...',
       loadingMsg: false,
-      quotes: ''
+      quotes: [],
+      quoteR: '',
+      authorR: ''
     }
   },
 
@@ -76,11 +114,8 @@ export default {
     async onGetNewMsg () {
       try {
         this.loadingMsg = true
-        const { quote } = await this.$store.dispatch(GET_NEW_MSG)
-        const { author } = await this.$store.dispatch(GET_NEW_MSG)
-        this.msg = quote
-        this.author = author
-        this.addQuotes(quote, author)
+        const result = await this.$store.dispatch(GET_NEW_MSG)
+        this.addQuotes(result)
       } catch (error) {
         console.log(error)
       } finally {
@@ -88,30 +123,36 @@ export default {
       }
     },
 
-    async addQuotes (quote, author) {
-      let quotes = {
-        quote: quote,
-        author: author
-      }
-      
-      localStorage.setItem('id', JSON.stringify(quotes) )
+    async addQuotes (result) {
+      const list = [...this.quoteList]
+      list.push(result)
+      this.$store.commit(SET_QUOTELIST, list)
 
-      this.obtainQuotes()
     },
 
-    async obtainQuotes () {
-      let dato = JSON.parse(localStorage.getItem('id'))
-      this.quotes = {dato}
-    }
-  }
+    async deleteQuotes (index) {
+      const list = [...this.quoteList]
+      list.splice(index, 1)
+      this.$store.commit(SET_QUOTELIST, list)
+    },
 
-  /*
+    async createQuote (quote, author) {
+      const list = [...this.quoteList]
+      const newQuote = {quote, author}
+      list.push(newQuote)
+      this.$store.commit(SET_QUOTELIST, list)
+    },
+
+    async updateQuote () {
+
+    }
+  },
+
   computed: {
     ...mapGetters([
-      'hi'
+      'quoteList'
     ])
   }
-  */
 }
 </script>
 
