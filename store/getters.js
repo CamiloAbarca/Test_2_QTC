@@ -4,5 +4,8 @@ export default {
   },
   quoteList (state) {
     return state.quoteList
+  },
+  quoteListUpdate (state) {
+    return state.quoteListUpdate
   }
 }

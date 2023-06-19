@@ -1,16 +1,8 @@
 <template>
   <div>
-    <!-- Botón Generar Frase -->
-    <br>
-    <v-btn 
-      @click="onGetNewMsg"
-    >
-      Generar Frase
-    </v-btn>
+    <h3>Pendiente</h3>
     <br>
     <br>
-    <br>
-
     <v-divider></v-divider>
 <!-- Tabla de quotes -->
   <v-simple-table>
@@ -30,7 +22,7 @@
       </thead>
       <tbody>
         <tr
-        v-for="quote in quoteList"
+        v-for="quote, index in quoteList"
           :key="quote.index"
         >
           <td>{{ quote.quote }}</td>
@@ -38,7 +30,7 @@
           <td>
             <v-btn
             x-small
-            @click="sendQuote(quote.quote, quote.author)"
+            @click="sendQuote(index)"
               
             >
             Send Update
@@ -69,7 +61,8 @@
 import { mapGetters } from 'vuex';
 
 import { GET_NEW_MSG } from '~/store/actions.types'
-import { SET_QUOTELIST, SET_QUOTELIST_UPDATE} from '~/store/mutations.types';
+
+import { SET_QUOTELIST } from '~/store/mutations.types'
 
 
 export default {
@@ -102,18 +95,31 @@ export default {
 
     },
 
-    async sendQuote (quote, author) {
-      const list = [...this.quoteListUpdate]
-      list.push({quote, author})
-      this.$store.commit(SET_QUOTELIST_UPDATE, list)
-      console.log(list)
+    async deleteQuotes (index) {
+      const list = [...this.quoteList]
+      list.splice(index, 1)
+      this.$store.commit(SET_QUOTELIST, list)
+    },
+
+    async createQuote (quote, author) {
+      const list = [...this.quoteList]
+      const newQuote = {quote, author}
+      list.push(newQuote)
+      this.$store.commit(SET_QUOTELIST, list)
+    },
+
+    async updateQuote () {
+
+    },
+
+    async sendQuote () {
+      console.log('Enviado')
     }
   },
 
   computed: {
     ...mapGetters([
-      'quoteList',
-      'quoteListUpdate',
+      'quoteList'
     ])
   }
 }
