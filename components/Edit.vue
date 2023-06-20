@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>En proceso</h3>
+    <h3>Update</h3>
     <br>
     <br>
     <v-divider></v-divider>
@@ -25,15 +25,24 @@
         v-for="quote, index in quoteListUpdate"
           :key="quote.index"
         >
-          <td>{{ quote.quote }}</td>
+          <td>
+            {{ quote.quote }}
+          </td>
           <td>{{ quote.author }}</td>
           <td>
             <v-btn
             x-small
-            @click="sendQuote(index)"
+            @click="sendQuote(quote.quote, quote.author, index)"
               
             >
-            Send to Update
+            Send to Delete
+            </v-btn>
+            <v-btn
+            x-small
+            @click="updateQuote"
+              
+            >
+            Update | NOT APPLIED
             </v-btn>
           </td>
         </tr>
@@ -46,13 +55,12 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import { SET_QUOTELIST_UPDATE } from '~/store/mutations.types'
+import { SET_QUOTELIST_UPDATE, SET_QUOTELIST_DELETE} from '~/store/mutations.types'
 
 
 export default {
   data () {
     return {
-      loadingMsg: false,
       quotes: [],
     }
   },
@@ -65,14 +73,28 @@ export default {
 
     },
 
-    async sendQuote () {
-      console.log('Enviado')
+    async deleteQuote (index) {
+      const list = [...this.quoteListUpdate]
+      list.splice(index, 1)
+      this.$store.commit(SET_QUOTELIST_UPDATE, list)
+    },
+
+    async sendQuote (quote, author, index) {
+      this.deleteQuote(index)
+      const listDelete = [...this.quoteListDelete]
+      listDelete.push({quote, author})
+      this.$store.commit(SET_QUOTELIST_DELETE, listDelete)
+    },
+
+    async updateQuote () {
+      console.log('Actualizando...')
     }
   },
 
   computed: {
     ...mapGetters([
-      'quoteListUpdate'
+      'quoteListUpdate',
+      'quoteListDelete',
     ])
   }
 }

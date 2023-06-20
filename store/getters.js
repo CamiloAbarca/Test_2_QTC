@@ -7,5 +7,8 @@ export default {
   },
   quoteListUpdate (state) {
     return state.quoteListUpdate
+  },
+  quoteListDelete (state) {
+    return state.quoteListDelete
   }
 }

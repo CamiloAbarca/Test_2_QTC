@@ -30,7 +30,7 @@
       </thead>
       <tbody>
         <tr
-        v-for="quote in quoteList"
+        v-for="quote, index in quoteList"
           :key="quote.index"
         >
           <td>{{ quote.quote }}</td>
@@ -38,7 +38,7 @@
           <td>
             <v-btn
             x-small
-            @click="sendQuote(quote.quote, quote.author)"
+            @click="sendQuote(quote.quote, quote.author, index)"
               
             >
             Send Update
@@ -48,20 +48,6 @@
       </tbody>
     </template>
   </v-simple-table>
-
-    <!--
-      Test:
-      Crear una tabla simple y consumir una API pública para llenarla de datos, una fila a la vez. La idea es implementar todas las 
-      funcionalidades que creas que mejoran su uso y experiencia.
-
-      - Crear v-simple-table (vuetify v2 https://v2.vuetifyjs.com/en/components/simple-tables/) de 2 columnas, Quote y Author. 
-      - Crear un v-btn que agregue una fila a la tabla cada vez que se presiona.
-      - La lista debe quedar guardada en el store usando Vuex.
-      - Implementar el borrado de elementos de la tabla (y del store).
-      - Extra1: Implementar el ingreso manual de nuevas frases y autores a la lista.
-      - Extra2: Implementar la edición de los elementos de la tabla.
-    -->
-
   </div>
 </template>
 
@@ -77,8 +63,6 @@ export default {
     return {
       loadingMsg: false,
       quotes: [],
-      quoteR: '',
-      authorR: ''
     }
   },
 
@@ -102,11 +86,17 @@ export default {
 
     },
 
-    async sendQuote (quote, author) {
-      const list = [...this.quoteListUpdate]
-      list.push({quote, author})
-      this.$store.commit(SET_QUOTELIST_UPDATE, list)
-      console.log(list)
+    async deleteQuote (index) {
+      const list = [...this.quoteList]
+      list.splice(index, 1)
+      this.$store.commit(SET_QUOTELIST, list)
+    },
+
+    async sendQuote (quote, author, index) {
+      this.deleteQuote(index)
+      const listUpdate = [...this.quoteListUpdate]
+      listUpdate.push({quote, author})
+      this.$store.commit(SET_QUOTELIST_UPDATE, listUpdate)
     }
   },
 

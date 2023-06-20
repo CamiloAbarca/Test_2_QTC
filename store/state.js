@@ -1,6 +1,8 @@
 const initialState = {
   hi: 'Hola!',
-  quoteList: []
+  quoteList: [],
+  quoteListUpdate: [],
+  quoteListDelete: []
 }
 
 export default () => {
